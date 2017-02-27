@@ -1,106 +1,63 @@
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Board {
-	int currentTurn = 0;
-	int totalPlayer = 0;
-	Player[] players;
-	Square[] squares = new Square[40];
-	String[] names = new String[] { "House", "Villa", "Town", "City", "Peace", "Village", "Jade", "Soi 4", "White", "Dark" };
-	
-	public Board(int totalPlayer) {
-		players = new Player[totalPlayer];
-		this.totalPlayer = totalPlayer;
-		for(int i = 0;i < players.length;i++){
-			players[i] = new Player(i, "Player " + (i + 1));
-		}
-		Random rand = new Random();
-		for(int i = 0;i < squares.length;i++){
-			if(i == 0){
-				squares[i] = new GoSquare("GO");
-			}else if(i == 9){
-				squares[i] = new JailSquare("Jail");
-			}else if(i == 19){
-				squares[i] = new VacationSquare("Vacation");
-			}else if(i == 29){
-				squares[i] = new GoToJailSquare("Go to Jail");
-			}else{
-				squares[i] = new HouseSquare(names[rand.nextInt(names.length)] + " " + names[rand.nextInt(names.length)], 400 + rand.nextInt(300));
-			}
-		}
+	public Board(){
+		
 	}
 	
-	public Square movePlayer(Player player, int face) {
-		return movePlayer(player, face, true);
+	public List<Segment> segs = new ArrayList<Segment>();
+	
+	//Properties OKR = new Properties("Old Kent Road",60)
+	Station PA = new Station("1", 200, 1);
+	Station BM = new Station("2",200, 2);
+	Station PS = new Station("3",200, 3);
+	Station FR = new Station("4",200, 4);
+	GoToJail goToJail = new GoToJail("Jail", 5);
+	CommunityChest CC1 = new CommunityChest("Com Chest", 6);
+	CommunityChest CC2 = new CommunityChest("Com Chest", 7);
+	CommunityChest CC3 = new CommunityChest("Com Chest", 8);
+	CommunityChest CC4 = new CommunityChest("Com Chest", 9);
+	CommunityChest CC5 = new CommunityChest("Com Chest", 10);
+	CommunityChest CC6 = new CommunityChest("Com Chest", 11);
+	CommunityChest CC7 = new CommunityChest("Com Chest", 12);
+	CommunityChest CC8 = new CommunityChest("Com Chest", 13);
+	Station T1 = new Station("1",200, 18);
+	Station T2 = new Station("2",200, 15);
+	Station T3 = new Station("3",200, 16);
+	Station T4 = new Station("4",200, 17);
+	TestSquare TEST = new TestSquare("TEST",14);
+	
+	
+	public void createBoard(){
+		
+		segs.add(PA);
+		segs.add(BM);
+		segs.add(PS);
+		segs.add(FR);
+		segs.add(goToJail);
+		segs.add(CC1);
+		segs.add(CC2);
+		segs.add(CC3);
+		segs.add(CC4);
+		segs.add(CC5);
+		segs.add(CC6);
+		segs.add(CC7);
+		segs.add(CC8);
+		segs.add(TEST);
+		
+		
+		
+		
+		//add segments to board array
+		//Round()
+		
 	}
 	
-	public Square movePlayer(Player player, int face, boolean count) {
-		if(player.isBrokeOut()){ return squares[player.getCurrentPosition()]; }
-		int newPosition = normalizePosition(player.getCurrentPosition() + face);
-		player.setPosition(newPosition);
-		Util.print(player, player.getName() + " goes to " + squares[player.getCurrentPosition()].getName());
-		squares[newPosition].doAction(player, this);
-		if(player.getMoney().isBrokeOut()){
-			Util.print(player, player.getName() + " has been broke out!");
-			player.setBrokeOut(true);
-		}else{
-			if(count){
-				player.nextTurn();
-			}
-		}
-		return squares[newPosition];
+	public Segment getSegment(int position){
+		System.out.println(Arrays.toString(segs.toArray()));
+		return segs.get(position);
 	}
 	
-	public boolean hasWinner() {
-		int ingame = 0;
-		for(Player player:players){
-			if(!player.isBrokeOut()){
-				ingame++;
-			}
-		}
-		return ingame <= 1;
-	}
-	
-	public Player getWinner() {
-		if(!hasWinner()){ return null; }
-		for(Player player:players){
-			if(!player.isBrokeOut()){ return player; }
-		}
-		return null;
-	}
-	
-	public Player getMaxMoneyPlayer() {
-		Player maxplayer = null;
-		for(Player player:players){
-			if(maxplayer == null || maxplayer.getMoney().getMoney() < player.getMoney().getMoney()){
-				maxplayer = player;
-			}
-		}
-		return maxplayer;
-	}
-	
-	public int normalizePosition(int position) {
-		return position % squares.length;
-	}
-	
-	public Player getCurrentPlayer() {
-		return players[currentTurn];
-	}
-	
-	public Player[] getPlayers() {
-		return players;
-	}
-	
-	public void nextTurn() {
-		if(++currentTurn >= players.length){
-			currentTurn = 0;
-		}
-	}
-	
-	public Player getPlayer(int id) {
-		return players[id];
-	}
-	
-	public int getTotalSquare() {
-		return squares.length;
-	}
 }
